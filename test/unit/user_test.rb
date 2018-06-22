@@ -119,4 +119,27 @@ class UserTest < Test::Unit::TestCase
 
     assert_equal metrics, user.load_metric_names
   end
+
+  test '.delete_all removes all the Users of a Service' do
+    Service.save!(id: 7003, provider_key: 'test_provkey', default_service: false)
+    Service.save!(id: 7004, provider_key: 'test_provkey', default_service: false)
+    num_users = 600
+    for i in 1..num_users
+      User.save! username: "username#{i}", service_id: 7003, plan_id: '1001',
+                 plan_name: 'planname'
+    end
+    User.save! username: "username_differentservice", service_id: 7004,
+               plan_id: '1001',plan_name: 'planname'
+
+    User.delete_all(7003)
+
+    for i in 1..num_users
+      assert_equal User.exists?(7003, "username#{i}"), false
+    end
+    assert_equal User.exists?(7004, "username_differentservice"), true
+    User.delete!(7004, "username_differentservice")
+    Service.delete_by_id(7003)
+    Service.delete_by_id(7004)
+  end
+
 end
