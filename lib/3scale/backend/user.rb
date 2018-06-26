@@ -77,9 +77,7 @@ module ThreeScale
       def self.delete!(service_id, username)
         service = Service.load_by_id(service_id)
         raise UserRequiresValidService if service.nil?
-        ServiceUserManagementUseCase.new(service, username).delete
-        clear_cache(service_id, username)
-        storage.del(self.key(service_id, username))
+        delete_users_in_batch(service_id, [username])
       end
 
       def self.delete_all(service_id)
