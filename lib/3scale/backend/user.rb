@@ -161,12 +161,12 @@ module ThreeScale
 
       def self.delete_users_in_batch(service_id, usernames)
         if usernames.size != 0
-          usernames.each do |username|
-            clear_cache(service_id, username)
-          end
           service_usernames_keys = usernames.map { |username| self.key(service_id, username) }
           storage.del(service_usernames_keys)
           storage.srem(self.service_users_set_key(service_id), usernames)
+          usernames.each do |username|
+            clear_cache(service_id, username)
+          end
         end
       end
 
