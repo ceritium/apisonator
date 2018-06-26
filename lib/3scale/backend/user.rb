@@ -91,7 +91,7 @@ module ThreeScale
         while !finished
           (current_scan_cursor_position, current_usernames) =
             storage.sscan(users_set_key, current_scan_cursor_position,
-                          { count: PIPELINED_SLICE_SIZE })
+                          { count: Storage::BATCH_SIZE })
           delete_users_in_batch(service_id,  current_usernames)
           finished = current_scan_cursor_position == "0"
         end
